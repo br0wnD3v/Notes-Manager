@@ -10,7 +10,6 @@ export default function Authenticate({ username, password, setValidUser }) {
     };
 
     await axios(config).then((res) => {
-      console.log(res.data);
       if (res.data.state == "valid") setValidUser(true);
       else {
         alert("Invalid User!");

@@ -47,12 +47,13 @@ export default function CreateUser() {
 
   return (
     <>
-      <div style={{ textAlign: "center", marginTop: "300px" }}>
+      <div style={{ textAlign: "center", marginTop: "250px" }}>
         <form onSubmit={create} method="POST">
           <input
             placeholder="Set Username"
             name="user"
             style={inputStyle}
+            required
           ></input>
           <br />
           <input
@@ -60,6 +61,14 @@ export default function CreateUser() {
             type="password"
             name="pass"
             style={inputStyle}
+            required
+          ></input>
+          <br />
+          <input
+            placeholder="Password Vault"
+            name="passMan"
+            style={inputStyle}
+            required
           ></input>
           <br />
           <input type="submit" style={inputStyle}></input>

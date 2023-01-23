@@ -18,9 +18,6 @@ export default function Get_details({
   const updateState = (event) => {
     event.preventDefault();
 
-    console.log("Event", event);
-    console.log("Target", event.target);
-
     const user = event.target.user.value;
     const pass = event.target.pass.value;
     if (!user || !pass) {
@@ -40,13 +37,19 @@ export default function Get_details({
     <>
       <div style={{ textAlign: "center", marginTop: "300px" }}>
         <form onSubmit={updateState} method="POST">
-          <input placeholder="Username" name="user" style={inputStyle}></input>
+          <input
+            placeholder="Username"
+            name="user"
+            style={inputStyle}
+            required
+          ></input>
           <br />
           <input
             placeholder="Password"
             type="password"
             name="pass"
             style={inputStyle}
+            required
           ></input>
           <br />
           <input type="submit" style={inputStyle}></input>
