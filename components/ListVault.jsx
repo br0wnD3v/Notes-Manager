@@ -5,6 +5,7 @@ export default function ListVault({ user, pass, data }) {
   const [add, setAdd] = useState(false);
   const [domain, setDomain] = useState(null);
   const [dPass, setDPass] = useState(null);
+  const [elementsUpdated, setElementsUpdated] = useState(0);
 
   const inputStyle = {
     padding: "10px",
@@ -15,11 +16,38 @@ export default function ListVault({ user, pass, data }) {
     padding: "10px",
   };
 
+  const addStyle = {
+    float: "right",
+    margin: "50px 200px 0 0",
+  };
+
+  const tableStyle = {
+    clear: "both",
+    margin: "100px auto",
+  };
+
+  const elements = [];
+  var length = Object.keys(data).length;
+
+  const Keys = Object.keys(data);
+  for (var index = 1; index < length; index++) {
+    elements.push(
+      <tr>
+        <td style={{ textAlign: "center", width: "60px" }}>{index}</td>
+        <td>{Keys[index]}</td>
+        <td>{data[Keys[index]]}</td>
+      </tr>
+    );
+  }
+  if (elementsUpdated == 0) setElementsUpdated(length);
+
   const updateState = (e) => {
     e.preventDefault();
     setDomain(e.target.dom.value);
     setDPass(e.target.dPass.value);
   };
+
+  async function deleteDomain(domain) {}
 
   async function createDomain() {
     const data = {
@@ -36,11 +64,26 @@ export default function ListVault({ user, pass, data }) {
     };
 
     await axios(config).then((res) => {
+      console.log("Inside");
       if (res.data.status == "created") {
-        alert("Success!");
+        setElementsUpdated(
+          elements.push(
+            <tr>
+              <td style={{ textAlign: "center", width: "60px" }}>
+                {length + 1}
+              </td>
+              <td>{domain}</td>
+              <td>{dPass}</td>
+              <td>
+                <button onClick={() => deleteDomain(domain)}></button>
+              </td>
+            </tr>
+          )
+        );
         setDPass(null);
         setDomain(null);
         setAdd(!add);
+        alert("Success!");
       }
     });
   }
@@ -59,13 +102,28 @@ export default function ListVault({ user, pass, data }) {
     <>
       {!add ? (
         <>
-          <button onClick={insertData} style={buttonStyle}>
-            Add +
-          </button>
+          <div style={addStyle}>
+            <button onClick={insertData} style={buttonStyle}>
+              Add +
+            </button>
+          </div>
+          <div>
+            <table style={tableStyle}>
+              <thead>
+                <tr>
+                  <th style={{ width: "60px" }}>Sno.</th>
+                  <th>Domain</th>
+                  <th>Password</th>
+                  <th style={{ width: "70px" }}>Del</th>
+                </tr>
+              </thead>
+              <tbody>{elements}</tbody>
+            </table>
+          </div>
         </>
       ) : (
         <>
-          <div style={{ textAlign: "center", marginTop: "300px" }}>
+          <div style={{ textAlign: "center", marginTop: "250px" }}>
             <form onSubmit={updateState} method="POST">
               <input
                 placeholder="Domain"
