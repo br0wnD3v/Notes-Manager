@@ -29,6 +29,7 @@ export default function Home() {
               {validUser ? (
                 <Front
                   user={username}
+                  password={password}
                   setValidUser={setValidUser}
                   setPassword={setPassword}
                   setUsername={setUsername}

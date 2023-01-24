@@ -43,7 +43,7 @@ async function delDomain(user, domain) {
   myObject = JSON.parse(myObject);
 
   var updated = myObject[user];
-  delete updated[domain];
+  if (updated[domain]) delete updated[domain];
   myObject[user] = updated;
 
   fs.writeFileSync("data/password.json", JSON.stringify(myObject, null, 4));
@@ -94,13 +94,11 @@ export default function (req, res) {
 
   if (req.method == "DELETE") {
     const data = req.body;
-    const { user, vPass, dId } = data;
+    const { user, vPass, domain } = data;
 
     checkPresent(user, vPass).then((result) => {
       if (result != {}) {
-        const Keys = Object.keys(result);
-        const toDel = Keys[dId];
-        delDomain(user, toDel)
+        delDomain(user, domain)
           .then(() => {
             res.status(200).json({ status: "deleted" });
           })

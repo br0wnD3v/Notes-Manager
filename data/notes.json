@@ -1,14 +1,6 @@
 {
   "Anuj": {
-    "0": {
-      "description": "Workout",
-      "status": 0,
-      "pass": null
-    },
-    "1": {
-      "description": "Workout",
-      "status": 0,
-      "pass": "ads"
-    }
+    "1": ["Drink Water", "Workout in the morning"],
+    "0": ["Go to work", "Buy Milk"]
   }
 }

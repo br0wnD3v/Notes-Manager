@@ -2,8 +2,8 @@ import fs from "fs";
 const filePath = "data/credentials.json";
 
 async function create(user, pass) {
-  const claims = fs.readFileSync(filePath);
-  const myObject = JSON.parse(claims);
+  const login = fs.readFileSync(filePath);
+  const myObject = JSON.parse(login);
   myObject[user] = pass;
   fs.writeFileSync("data/credentials.json", JSON.stringify(myObject, null, 4));
 }

@@ -5,6 +5,7 @@ import { useState } from "react";
 
 export default function Front({
   user,
+  password,
   setValidUser,
   setPassword,
   setUsername,
@@ -65,7 +66,7 @@ export default function Front({
           {passwords ? (
             <Passwords setPasswords={setPasswords} user={user} />
           ) : (
-            <Notes setNotes={setNotes} user={user} />
+            <Notes setNotes={setNotes} user={user} password={password} />
           )}
         </>
       )}
