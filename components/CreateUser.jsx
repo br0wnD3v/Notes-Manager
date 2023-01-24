@@ -5,13 +5,6 @@ export default function CreateUser() {
     padding: "10px",
     margin: "5px",
   };
-  const buttonStyle = {
-    cursor: "pointer",
-    color: "lightblue",
-    backgroundColor: "black",
-    padding: "10px",
-    marginLeft: "400px",
-  };
 
   const create = async (event) => {
     event.preventDefault();
@@ -21,7 +14,9 @@ export default function CreateUser() {
 
     const user = event.target.user.value;
     const pass = event.target.pass.value;
-    if (!user || !pass) {
+    const vPass = event.target.vPass.value;
+
+    if (!user || !pass || !vPass) {
       alert("Try Again!");
       return;
     } else {
@@ -36,9 +31,30 @@ export default function CreateUser() {
         url: "/api/login",
       };
 
-      await axios(config).then((res) => {
+      await axios(config).then(async (res) => {
         if (res.data.status == "created") {
-          alert("Created!");
+          const data = {
+            user: `${user}`,
+            pass: `${vPass}`,
+          };
+
+          const config = {
+            method: "POST",
+            data: data,
+            url: "/api/vault",
+          };
+
+          await axios(config).then((res) => {
+            if (res.data.status == "created") {
+              alert("Created!");
+              window.location.reload();
+            } else {
+              alert("Error! Try Again Later.");
+              window.location.reload();
+            }
+          });
+        } else {
+          alert("Error! Try Again Later.");
           window.location.reload();
         }
       });
@@ -66,7 +82,8 @@ export default function CreateUser() {
           <br />
           <input
             placeholder="Password Vault"
-            name="passMan"
+            name="vPass"
+            type="password"
             style={inputStyle}
             required
           ></input>

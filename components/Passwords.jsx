@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 
+import ListVault from "./ListVault";
+
 export default function Passwords({ setPasswords, user }) {
   const [processed, setProcessed] = useState(false);
   const [vpass, setvPass] = useState(null);
@@ -24,7 +26,7 @@ export default function Passwords({ setPasswords, user }) {
   async function execute() {
     const config = {
       method: "GET",
-      url: `/api/vault?user=${user}&password=${vpass}`,
+      url: `/api/vault?user=${user}&pass=${vpass}`,
     };
 
     await axios(config).then((res) => {

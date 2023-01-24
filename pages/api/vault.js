@@ -26,6 +26,18 @@ async function checkPresent(user, pass) {
   } else return {};
 }
 
+async function addDomain(user, domain, password) {
+  var myObject = fs.readFileSync("data/password.json");
+  myObject = JSON.parse(myObject);
+
+  var toUpdate = myObject[user];
+  toUpdate[domain] = password;
+  myObject[user] = toUpdate;
+
+  fs.writeFileSync("data/password.json", JSON.stringify(myObject, null, 4));
+  return true;
+}
+
 export default function (req, res) {
   if (req.method == "POST") {
     const data = req.body;
@@ -42,10 +54,29 @@ export default function (req, res) {
 
   if (req.method == "GET") {
     const data = req.query;
-    const { user, password } = data;
+    const { user, pass } = data;
 
-    checkPresent(user, password).then((result) => {
+    checkPresent(user, pass).then((result) => {
       res.status(200).json({ status: result });
+    });
+  }
+
+  if (req.method == "PUT") {
+    const data = req.body;
+    const { user, vPass, domain, dPass } = data;
+
+    checkPresent(user, vPass).then((result) => {
+      if (result != {}) {
+        addDomain(user, domain, dPass)
+          .then(() => {
+            res.status(201).json({ status: "created" });
+          })
+          .catch((err) => {
+            res.status(400).json({ status: err });
+          });
+      } else {
+        res.status(401).json({ status: "invalid credentials" });
+      }
     });
   }
 }
