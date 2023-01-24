@@ -28,27 +28,33 @@ export default function ListNotes({ user, password, data }) {
   };
 
   const elements = [];
-  const pending = data["incomplete"];
-  const completed = data["completed"];
-  var ci = 0;
-  var pi = 0;
-  for (; pi < pending.length; pi++) {
-    elements.push(
-      //Added just for the warning
-      <tr key={pi}>
-        <td style={{ textAlign: "center", width: "60px" }}>{pi + 1}</td>
-        <td>{pending[pi]}</td>
-      </tr>
-    );
+
+  if (data["incomplete"] != undefined) {
+    const pending = data["incomplete"];
+    const pKeys = Object.keys(pending);
+    pKeys.forEach((key) => {
+      elements.push(
+        //Added just for the warning
+        <tr key={key}>
+          <td style={{ textAlign: "center", width: "200px" }}>{key}</td>
+          <td>{pending[key]}</td>
+        </tr>
+      );
+    });
   }
-  for (; ci < completed.length; ci++) {
-    elements.push(
-      //Added just for the warning
-      <tr key={ci + pi + 1}>
-        <td style={{ textAlign: "center", width: "60px" }}>{ci + pi + 1}</td>
-        <td>{completed[ci]}</td>
-      </tr>
-    );
+
+  if (data["complete"] != undefined) {
+    const completed = data["completed"];
+    const cKeys = Object.keys(completed);
+    cKeys.forEach((key) => {
+      elements.push(
+        //Added just for the warning
+        <tr key={key}>
+          <td style={{ textAlign: "center", width: "60px" }}>{key}</td>
+          <td>{completed[key]}</td>
+        </tr>
+      );
+    });
   }
 
   const toAdd = (e) => {
@@ -58,7 +64,7 @@ export default function ListNotes({ user, password, data }) {
 
   const toDel = (e) => {
     e.preventDefault();
-    setDelTask(e.target.sno.value);
+    setDelTask(e.target.taskId.value);
   };
 
   async function createTask() {
@@ -90,14 +96,15 @@ export default function ListNotes({ user, password, data }) {
     }
   }, [task]);
 
-  async function deleteTask(index) {
+  async function deleteTask(epoch) {
     const data = {
       user: `${user}`,
       pass: `${password}`,
+      taskEpoch: `${epoch}`,
     };
 
     const config = {
-      url: "/api/vault",
+      url: "/api/note",
       data: data,
       method: "DELETE",
     };
@@ -112,7 +119,7 @@ export default function ListNotes({ user, password, data }) {
 
   useEffect(() => {
     if (delTask) {
-      delTask(delTask);
+      deleteTask(delTask);
     }
   }, [delTask]);
 
@@ -142,8 +149,8 @@ export default function ListNotes({ user, password, data }) {
                 <table style={tableStyle}>
                   <thead>
                     <tr>
-                      <th style={{ textAlign: "center", width: "60px" }}>
-                        Sno
+                      <th style={{ textAlign: "center", width: "200px" }}>
+                        Unique ID
                       </th>
                       <th>Note</th>
                     </tr>
@@ -157,8 +164,8 @@ export default function ListNotes({ user, password, data }) {
               <div style={{ textAlign: "center", marginTop: "250px" }}>
                 <form onSubmit={toDel} method="POST">
                   <input
-                    placeholder="Sno"
-                    name="dom"
+                    placeholder="Unique ID"
+                    name="taskId"
                     style={inputStyle}
                     required
                   ></input>

@@ -31,6 +31,7 @@ export default function Passwords({ setNotes, user, password }) {
 
     await axios(config).then((res) => {
       const obj = res.data;
+      console.log(obj);
       if (Object.keys(obj).length > 0) {
         setDataFetched(obj);
       } else {

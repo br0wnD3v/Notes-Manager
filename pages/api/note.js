@@ -1,14 +1,43 @@
 import fs from "fs";
+import moment from "moment";
+
+async function addUser(user) {
+  var myObject = fs.readFileSync("data/notes.json");
+  myObject = JSON.parse(myObject);
+
+  const toAdd = { 0: {}, 1: {} };
+  myObject[user] = toAdd;
+
+  fs.writeFileSync("data/notes.json", JSON.stringify(myObject, null, 4));
+}
 
 async function addTask(user, task) {
   var myObject = fs.readFileSync("data/notes.json");
   myObject = JSON.parse(myObject);
 
-  var toUpdate = myObject[user];
-  toUpdate["0"].push(task);
-  myObject[user] = toUpdate;
+  var toUpdate = myObject[user]["0"];
+  var currEpoch = moment().unix();
+  toUpdate[currEpoch] = task;
+  myObject[user]["0"] = toUpdate;
 
   fs.writeFileSync("data/notes.json", JSON.stringify(myObject, null, 4));
+}
+
+async function delTask(user, epoch) {
+  var myObject = fs.readFileSync("data/notes.json");
+  myObject = JSON.parse(myObject);
+
+  var pending = myObject[user]["0"];
+  var completed = myObject[user]["1"];
+
+  if (pending[epoch] != undefined) delete pending[epoch];
+  if (completed[epoch] != undefined) delete completed[epoch];
+
+  myObject[user]["0"] = pending;
+  myObject[user]["1"] = completed;
+
+  fs.writeFileSync("data/notes.json", JSON.stringify(myObject, null, 4));
+  return true;
 }
 
 async function validate(user, pass) {
@@ -31,19 +60,20 @@ export default function handler(req, res) {
 
     user = user.toString();
     pass = pass.toString();
-    task = task.toString();
 
-    validate(user, pass)
-      .then((result) => {
-        if (typeof result == "object") {
-          addTask(user, task).then(() => {
-            res.status(200).json({ status: "added" });
-          });
-        } else res.state(500).json({ status: "failed" });
-      })
-      .catch(() => {
-        res.state(500).json({ status: "failed" });
-      });
+    if (!task) {
+      addUser(user);
+      res.status(201).json({ status: "created user" });
+      return;
+    }
+
+    validate(user, pass).then((result) => {
+      if (typeof result == "object") {
+        addTask(user, task).then(() => {
+          res.status(200).json({ status: "added" });
+        });
+      } else res.status(500).json({ status: "failed" });
+    });
   }
   if (req.method == "GET") {
     const data = req.query;
@@ -61,7 +91,23 @@ export default function handler(req, res) {
         res
           .status(200)
           .json({ completed: result["1"], incomplete: result["0"] });
-      else res.status(200).json({ state: "invalid" });
+      else res.status(200).json({ status: "invalid" });
+    });
+  }
+  if (req.method == "DELETE") {
+    const data = req.body;
+    var { user, pass, taskEpoch } = data;
+
+    user = user.toString();
+    pass = pass.toString();
+
+    validate(user, pass).then((result) => {
+      if (typeof result == "object") {
+        delTask(user, taskEpoch).then((result) => {
+          if (result == true) res.status(200).json({ status: "deleted" });
+          else res.status(200).json({ status: "invalid" });
+        });
+      } else res.status(200).json({ status: "invalid" });
     });
   }
 }

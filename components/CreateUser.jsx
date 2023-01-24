@@ -44,10 +44,28 @@ export default function CreateUser() {
             url: "/api/vault",
           };
 
-          await axios(config).then((res) => {
+          await axios(config).then(async (res) => {
             if (res.data.status == "created") {
-              alert("Created!");
-              window.location.reload();
+              const data = {
+                user: `${user}`,
+                pass: `${vPass}`,
+                task: "",
+              };
+
+              const config = {
+                method: "POST",
+                data: data,
+                url: "/api/note",
+              };
+              await axios(config).then(async (res) => {
+                if (res.data.status == "created user") {
+                  alert("Created!");
+                  window.location.reload();
+                } else {
+                  alert("Error! Try Again Later.");
+                  window.location.reload();
+                }
+              });
             } else {
               alert("Error! Try Again Later.");
               window.location.reload();
