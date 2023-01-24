@@ -22,8 +22,8 @@ async function checkPresent(user, pass) {
 
   if (myObject[user]) {
     if (myObject[user]["MASTER_PASSWORD"] == pass) return myObject[user];
-    else return false;
-  } else return false;
+    else return {};
+  } else return {};
 }
 
 export default function (req, res) {
@@ -45,8 +45,7 @@ export default function (req, res) {
     const { user, password } = data;
 
     checkPresent(user, password).then((result) => {
-      if (result) res.status(200).json({ status: result });
-      else res.status(200).json({ status: "invalid" });
+      res.status(200).json({ status: result });
     });
   }
 }

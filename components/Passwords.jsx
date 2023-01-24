@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 export default function Passwords({ setPasswords, user }) {
   const [processed, setProcessed] = useState(false);
   const [vpass, setvPass] = useState(null);
+  const [dataFetched, setDataFetched] = useState(null);
 
   const axios = require("axios");
 
@@ -27,14 +28,21 @@ export default function Passwords({ setPasswords, user }) {
     };
 
     await axios(config).then((res) => {
-      var obj = res;
-      if (typeof obj == "object") setProcessed(true);
-      else {
+      const obj = res.data.status;
+      if (Object.keys(obj).length > 0) {
+        setDataFetched(obj);
+      } else {
         alert("Invalid Password");
         return;
       }
     });
   }
+
+  useEffect(() => {
+    if (dataFetched) {
+      setProcessed(true);
+    }
+  }, [dataFetched]);
 
   useEffect(() => {
     if (vpass) {
@@ -74,7 +82,7 @@ export default function Passwords({ setPasswords, user }) {
         </>
       ) : (
         <>
-          <ListVault user={user} />
+          <ListVault user={user} pass={vpass} data={dataFetched} />
         </>
       )}
     </>
