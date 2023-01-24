@@ -1,5 +1,16 @@
 import fs from "fs";
 
+async function addTask(user, task) {
+  var myObject = fs.readFileSync("data/notes.json");
+  myObject = JSON.parse(myObject);
+
+  var toUpdate = myObject[user];
+  toUpdate["0"].push(task);
+  myObject[user] = toUpdate;
+
+  fs.writeFileSync("data/notes.json", JSON.stringify(myObject, null, 4));
+}
+
 async function validate(user, pass) {
   const login = fs.readFileSync("data/credentials.json");
   const myObject = JSON.parse(login);
@@ -15,17 +26,24 @@ async function validate(user, pass) {
 
 export default function handler(req, res) {
   if (req.method == "POST") {
-    const data = req.query;
-    var { user, pass } = data;
+    const data = req.body;
+    var { user, pass, task } = data;
 
-    if (!user || !pass) {
-      res.status(400).json({});
-      return;
-    }
     user = user.toString();
     pass = pass.toString();
+    task = task.toString();
 
-    validate(user, pass).then((result) => {});
+    validate(user, pass)
+      .then((result) => {
+        if (typeof result == "object") {
+          addTask(user, task).then(() => {
+            res.status(200).json({ status: "added" });
+          });
+        } else res.state(500).json({ status: "failed" });
+      })
+      .catch(() => {
+        res.state(500).json({ status: "failed" });
+      });
   }
   if (req.method == "GET") {
     const data = req.query;

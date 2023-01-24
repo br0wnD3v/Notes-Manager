@@ -1,6 +1,6 @@
 {
   "Anuj": {
-    "1": ["Drink Water", "Workout in the morning"],
-    "0": ["Go to work", "Buy Milk"]
+    "0": ["Go to work", "Buy Milk", "Dont weorkad"],
+    "1": ["Drink Water", "Workout in the morning"]
   }
 }

@@ -30,7 +30,7 @@ export default function Passwords({ setNotes, user, password }) {
     };
 
     await axios(config).then((res) => {
-      const obj = res.data.status;
+      const obj = res.data;
       if (Object.keys(obj).length > 0) {
         setDataFetched(obj);
       } else {
@@ -53,7 +53,7 @@ export default function Passwords({ setNotes, user, password }) {
         <>Loading...</>
       ) : (
         <>
-          <ListNotes user={user} data={dataFetched} />
+          <ListNotes user={user} data={dataFetched} password={password} />
         </>
       )}
     </>

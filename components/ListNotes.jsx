@@ -1,13 +1,12 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 
-export default function ListVault({ user, pass, data }) {
+export default function ListNotes({ user, password, data }) {
   const [add, setAdd] = useState(false);
   const [del, setDel] = useState(false);
 
-  const [delDom, setDelDom] = useState(null);
-  const [domain, setDomain] = useState(null);
-  const [dPass, setDPass] = useState(null);
+  const [task, setTask] = useState(null);
+  const [delTask, setDelTask] = useState(null);
 
   const inputStyle = {
     padding: "10px",
@@ -29,48 +28,56 @@ export default function ListVault({ user, pass, data }) {
   };
 
   const elements = [];
-  var length = Object.keys(data).length;
-
-  const Keys = Object.keys(data);
-  for (var index = 1; index < length; index++) {
+  const pending = data["incomplete"];
+  const completed = data["completed"];
+  var ci = 0;
+  var pi = 0;
+  for (; pi < pending.length; pi++) {
     elements.push(
-      <tr>
-        <td style={{ textAlign: "center", width: "60px" }}>{index}</td>
-        <td>{Keys[index]}</td>
-        <td>{data[Keys[index]]}</td>
+      //Added just for the warning
+      <tr key={pi}>
+        <td style={{ textAlign: "center", width: "60px" }}>{pi + 1}</td>
+        <td>{pending[pi]}</td>
+      </tr>
+    );
+  }
+  for (; ci < completed.length; ci++) {
+    elements.push(
+      //Added just for the warning
+      <tr key={ci + pi + 1}>
+        <td style={{ textAlign: "center", width: "60px" }}>{ci + pi + 1}</td>
+        <td>{completed[ci]}</td>
       </tr>
     );
   }
 
   const toAdd = (e) => {
     e.preventDefault();
-    setDomain(e.target.dom.value);
-    setDPass(e.target.dPass.value);
+    setTask(e.target.task.value);
   };
 
   const toDel = (e) => {
     e.preventDefault();
-    setDelDom(e.target.dom.value);
+    setDelTask(e.target.sno.value);
   };
 
-  async function createDomain() {
+  async function createTask() {
     const data = {
       user: `${user}`,
-      vPass: `${pass}`,
-      domain: `${domain}`,
-      dPass: `${dPass}`,
+      pass: `${password}`,
+      task: `${task}`,
     };
 
     const config = {
-      url: "/api/vault",
+      url: "/api/note",
       data: data,
-      method: "PUT",
+      method: "POST",
     };
 
     await axios(config).then((res) => {
-      if (res.data.status == "created") {
-        setDPass(null);
-        setDomain(null);
+      console.log(res.data);
+      if (res.data.status == "added") {
+        setTask(null);
         setAdd(!add);
         alert("Added. Reload the page to see the changes.");
       }
@@ -78,16 +85,15 @@ export default function ListVault({ user, pass, data }) {
   }
 
   useEffect(() => {
-    if (domain && dPass) {
-      createDomain();
+    if (task) {
+      createTask(task);
     }
-  }, [dPass, domain]);
+  }, [task]);
 
-  async function deleteDomain(domain) {
+  async function deleteTask(index) {
     const data = {
       user: `${user}`,
-      vPass: `${pass}`,
-      domain: `${domain}`,
+      pass: `${password}`,
     };
 
     const config = {
@@ -98,18 +104,17 @@ export default function ListVault({ user, pass, data }) {
 
     await axios(config).then((res) => {
       if (res.data.status == "deleted") {
-        setDel(!del);
-        setDelDom(null);
+        setDelTask(null);
         alert("Deleted. Reload the page to see the changes.");
       }
     });
   }
 
   useEffect(() => {
-    if (delDom) {
-      deleteDomain(delDom);
+    if (delTask) {
+      delTask(delTask);
     }
-  }, [delDom]);
+  }, [delTask]);
 
   const insertData = () => {
     setAdd(!add);
@@ -137,9 +142,10 @@ export default function ListVault({ user, pass, data }) {
                 <table style={tableStyle}>
                   <thead>
                     <tr>
-                      <th style={{ width: "60px" }}>Sno.</th>
-                      <th>Domain</th>
-                      <th>Password</th>
+                      <th style={{ textAlign: "center", width: "60px" }}>
+                        Sno
+                      </th>
+                      <th>Note</th>
                     </tr>
                   </thead>
                   <tbody>{elements}</tbody>
@@ -151,7 +157,7 @@ export default function ListVault({ user, pass, data }) {
               <div style={{ textAlign: "center", marginTop: "250px" }}>
                 <form onSubmit={toDel} method="POST">
                   <input
-                    placeholder="Domain"
+                    placeholder="Sno"
                     name="dom"
                     style={inputStyle}
                     required
@@ -168,16 +174,8 @@ export default function ListVault({ user, pass, data }) {
           <div style={{ textAlign: "center", marginTop: "250px" }}>
             <form onSubmit={toAdd} method="POST">
               <input
-                placeholder="Domain URL"
-                name="dom"
-                style={inputStyle}
-                required
-              ></input>
-              <br />
-              <input
-                placeholder="Password"
-                type="password"
-                name="dPass"
+                placeholder="Note"
+                name="task"
                 style={inputStyle}
                 required
               ></input>
