@@ -38,6 +38,18 @@ async function addDomain(user, domain, password) {
   return true;
 }
 
+async function delDomain(user, domain) {
+  var myObject = fs.readFileSync("data/password.json");
+  myObject = JSON.parse(myObject);
+
+  var updated = myObject[user];
+  delete updated[domain];
+  myObject[user] = updated;
+
+  fs.writeFileSync("data/password.json", JSON.stringify(myObject, null, 4));
+  return true;
+}
+
 export default function (req, res) {
   if (req.method == "POST") {
     const data = req.body;
@@ -76,6 +88,27 @@ export default function (req, res) {
           });
       } else {
         res.status(401).json({ status: "invalid credentials" });
+      }
+    });
+  }
+
+  if (req.method == "DELETE") {
+    const data = req.body;
+    const { user, vPass, dId } = data;
+
+    checkPresent(user, vPass).then((result) => {
+      if (result != {}) {
+        const Keys = Object.keys(result);
+        const toDel = Keys[dId];
+        delDomain(user, toDel)
+          .then(() => {
+            res.status(200).json({ status: "deleted" });
+          })
+          .catch((err) => {
+            res.status(400).json({ status: err });
+          });
+      } else {
+        res.status(401).json({ status: "invalid domain" });
       }
     });
   }

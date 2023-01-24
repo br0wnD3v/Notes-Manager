@@ -3,9 +3,11 @@ import { useEffect, useState } from "react";
 
 export default function ListVault({ user, pass, data }) {
   const [add, setAdd] = useState(false);
+  const [del, setDel] = useState(false);
+
+  const [delId, setDelId] = useState(0);
   const [domain, setDomain] = useState(null);
   const [dPass, setDPass] = useState(null);
-  const [elementsUpdated, setElementsUpdated] = useState(0);
 
   const inputStyle = {
     padding: "10px",
@@ -39,15 +41,17 @@ export default function ListVault({ user, pass, data }) {
       </tr>
     );
   }
-  if (elementsUpdated == 0) setElementsUpdated(length);
 
-  const updateState = (e) => {
+  const toAdd = (e) => {
     e.preventDefault();
     setDomain(e.target.dom.value);
     setDPass(e.target.dPass.value);
   };
 
-  async function deleteDomain(domain) {}
+  const toDel = (e) => {
+    e.preventDefault();
+    setDelId(e.target.dom.value);
+  };
 
   async function createDomain() {
     const data = {
@@ -64,26 +68,11 @@ export default function ListVault({ user, pass, data }) {
     };
 
     await axios(config).then((res) => {
-      console.log("Inside");
       if (res.data.status == "created") {
-        setElementsUpdated(
-          elements.push(
-            <tr>
-              <td style={{ textAlign: "center", width: "60px" }}>
-                {length + 1}
-              </td>
-              <td>{domain}</td>
-              <td>{dPass}</td>
-              <td>
-                <button onClick={() => deleteDomain(domain)}></button>
-              </td>
-            </tr>
-          )
-        );
         setDPass(null);
         setDomain(null);
         setAdd(!add);
-        alert("Success!");
+        alert("Added. Reload the page to see the changes.");
       }
     });
   }
@@ -94,37 +83,90 @@ export default function ListVault({ user, pass, data }) {
     }
   }, [dPass, domain]);
 
+  async function deleteDomain(id) {
+    const data = {
+      user: `${user}`,
+      vPass: `${pass}`,
+      dId: `${id}`,
+    };
+
+    const config = {
+      url: "/api/vault",
+      data: data,
+      method: "DELETE",
+    };
+
+    await axios(config).then((res) => {
+      if (res.data.status == "deleted") {
+        setDel(!del);
+        setDelId(0);
+        alert("Deleted. Reload the page to see the changes.");
+      }
+    });
+  }
+
+  useEffect(() => {
+    if (delId) {
+      deleteDomain(delId);
+    }
+  }, [delId]);
+
   const insertData = () => {
     setAdd(!add);
+  };
+
+  const delData = () => {
+    setDel(!del);
   };
 
   return (
     <>
       {!add ? (
         <>
-          <div style={addStyle}>
-            <button onClick={insertData} style={buttonStyle}>
-              Add +
-            </button>
-          </div>
-          <div>
-            <table style={tableStyle}>
-              <thead>
-                <tr>
-                  <th style={{ width: "60px" }}>Sno.</th>
-                  <th>Domain</th>
-                  <th>Password</th>
-                  <th style={{ width: "70px" }}>Del</th>
-                </tr>
-              </thead>
-              <tbody>{elements}</tbody>
-            </table>
-          </div>
+          {!del ? (
+            <>
+              <div style={addStyle}>
+                <button onClick={insertData} style={buttonStyle}>
+                  Add
+                </button>
+                <button onClick={delData} style={buttonStyle}>
+                  Delete
+                </button>
+              </div>
+              <div>
+                <table style={tableStyle}>
+                  <thead>
+                    <tr>
+                      <th style={{ width: "60px" }}>Sno.</th>
+                      <th>Domain</th>
+                      <th>Password</th>
+                    </tr>
+                  </thead>
+                  <tbody>{elements}</tbody>
+                </table>
+              </div>
+            </>
+          ) : (
+            <>
+              <div style={{ textAlign: "center", marginTop: "250px" }}>
+                <form onSubmit={toDel} method="POST">
+                  <input
+                    placeholder="Domain Sno"
+                    name="dom"
+                    style={inputStyle}
+                    required
+                  ></input>
+                  <br />
+                  <input type="submit" style={inputStyle}></input>
+                </form>
+              </div>
+            </>
+          )}
         </>
       ) : (
         <>
           <div style={{ textAlign: "center", marginTop: "250px" }}>
-            <form onSubmit={updateState} method="POST">
+            <form onSubmit={toAdd} method="POST">
               <input
                 placeholder="Domain"
                 name="dom"

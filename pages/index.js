@@ -27,7 +27,12 @@ export default function Home() {
           ) : (
             <>
               {validUser ? (
-                <Front user={username} />
+                <Front
+                  user={username}
+                  setValidUser={setValidUser}
+                  setPassword={setPassword}
+                  setUsername={setUsername}
+                />
               ) : (
                 <>
                   <Authenticate

@@ -3,13 +3,24 @@ import Passwords from "./Passwords";
 
 import { useState } from "react";
 
-export default function Front({ user }) {
+export default function Front({
+  user,
+  setValidUser,
+  setPassword,
+  setUsername,
+}) {
   const [notes, setNotes] = useState(false);
   const [passwords, setPasswords] = useState(false);
 
   const divStyle = {
     textAlign: "center",
-    margin: "300px auto 0 auto",
+    margin: "250px auto 0 auto",
+  };
+
+  const logOutButton = {
+    width: "150px",
+    height: "50px",
+    margin: "20px",
   };
 
   const buttonStyle = {
@@ -17,6 +28,12 @@ export default function Front({ user }) {
     height: "50px",
     marginBottom: "20px",
   };
+
+  function logOut() {
+    setValidUser(false);
+    setPassword(null);
+    setUsername(null);
+  }
 
   function openNotes() {
     setNotes(true);
@@ -30,6 +47,9 @@ export default function Front({ user }) {
     <>
       {!notes && !passwords ? (
         <>
+          <button onClick={() => logOut()} style={logOutButton}>
+            Log Out
+          </button>
           <div style={divStyle}>
             <button onClick={() => openPasswords()} style={buttonStyle}>
               Password Manager
