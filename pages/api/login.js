@@ -9,8 +9,9 @@ async function create(user, pass) {
 }
 
 async function validate(user, pass) {
-  const claims = fs.readFileSync(filePath);
-  const myObject = JSON.parse(claims);
+  const cred = fs.readFileSync(filePath);
+  const myObject = JSON.parse(cred);
+
   if (myObject[user]) {
     if (myObject[user].toString() == pass) return true;
     else return false;
@@ -47,6 +48,7 @@ export default function handler(req, res) {
       res.status(400).json({});
       return;
     }
+
     user = user.toString();
     pass = pass.toString();
 

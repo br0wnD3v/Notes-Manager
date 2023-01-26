@@ -5,8 +5,8 @@ import CreateUser from "../components/CreateUser";
 import Front from "../components/Front";
 
 export default function Home() {
-  const [username, setUsername] = useState(false);
-  const [password, setPassword] = useState(false);
+  const [username, setUsername] = useState(null);
+  const [password, setPassword] = useState(null);
   const [createNew, setCreateNew] = useState(false);
   const [validUser, setValidUser] = useState(false);
 

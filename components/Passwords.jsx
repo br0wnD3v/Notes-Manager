@@ -23,13 +23,13 @@ export default function Passwords({ setPasswords, user }) {
     setPasswords(false);
   }
 
-  async function execute() {
+  function execute() {
     const config = {
       method: "GET",
       url: `/api/vault?user=${user}&pass=${vpass}`,
     };
 
-    await axios(config).then((res) => {
+    axios(config).then((res) => {
       const obj = res.data.status;
       if (Object.keys(obj).length > 0) {
         setDataFetched(obj);
@@ -77,7 +77,7 @@ export default function Passwords({ setPasswords, user }) {
               <input
                 type="submit"
                 style={inputStyle}
-                onSubmit={checkPass}
+                // onSubmit={checkPass}
               ></input>
             </form>
           </div>

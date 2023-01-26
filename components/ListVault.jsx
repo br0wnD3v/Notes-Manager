@@ -53,7 +53,7 @@ export default function ListVault({ user, pass, data }) {
     setDelDom(e.target.dom.value);
   };
 
-  async function createDomain() {
+  function createDomain() {
     const data = {
       user: `${user}`,
       vPass: `${pass}`,
@@ -67,7 +67,7 @@ export default function ListVault({ user, pass, data }) {
       method: "PUT",
     };
 
-    await axios(config).then((res) => {
+    axios(config).then((res) => {
       if (res.data.status == "created") {
         setDPass(null);
         setDomain(null);
