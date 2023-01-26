@@ -9,9 +9,6 @@ export default function CreateUser() {
   const create = async (event) => {
     event.preventDefault();
 
-    console.log("Event", event);
-    console.log("Target", event.target);
-
     const user = event.target.user.value;
     const pass = event.target.pass.value;
     const vPass = event.target.vPass.value;
@@ -31,7 +28,7 @@ export default function CreateUser() {
         url: "/api/login",
       };
 
-      await axios(config).then(async (res) => {
+      axios(config).then((res) => {
         if (res.data.status == "created") {
           const data = {
             user: `${user}`,
@@ -44,7 +41,7 @@ export default function CreateUser() {
             url: "/api/vault",
           };
 
-          await axios(config).then(async (res) => {
+          axios(config).then((res) => {
             if (res.data.status == "created") {
               const data = {
                 user: `${user}`,
@@ -57,7 +54,8 @@ export default function CreateUser() {
                 data: data,
                 url: "/api/note",
               };
-              await axios(config).then(async (res) => {
+
+              axios(config).then((res) => {
                 if (res.data.status == "created user") {
                   alert("Created!");
                   window.location.reload();
